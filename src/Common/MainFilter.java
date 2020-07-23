@@ -7,7 +7,7 @@
 //import java.io.IOException;
 //
 //@WebFilter("/*")
-//public class Filter implements javax.servlet.Filter {
+//public class MainFilter implements Filter {
 //
 //    private String encoding;
 //

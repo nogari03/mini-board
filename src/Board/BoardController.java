@@ -1,5 +1,7 @@
 package Board;
 
+import Common.PagingVO;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -20,12 +22,15 @@ public class BoardController extends HttpServlet {
         doHandle(request,response);
     }
     private void doHandle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //필터 적용시 삭제
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
         response.setCharacterEncoding("utf-8");
 
         BoardService service = new BoardService();
 
+        String row_num = request.getParameter("row_num");
         String article_no = request.getParameter("article_no");
         String writer_id = request.getParameter("writer_id");
         String writer_name = request.getParameter("writer_name");
@@ -33,10 +38,9 @@ public class BoardController extends HttpServlet {
         String password = request.getParameter("password");
         String content = request.getParameter("content");
 
-        System.out.println(article_no);
         String command = request.getParameter("command");
 
-        BoardVO vo = new BoardVO(article_no,writer_id,writer_name,title,password,content);
+        BoardVO vo = new BoardVO(row_num,article_no,writer_id,writer_name,title,password,content);
 
         List<BoardVO> list = null;
 
@@ -44,29 +48,66 @@ public class BoardController extends HttpServlet {
         RequestDispatcher dispatcher;
 
         dispatcher = context.getRequestDispatcher("/static/board.jsp");
-//        list = service.printBoardlist();
 
-        int pageNo = 1;
-
-        if(request.getParameter("page")!=null){
-            pageNo = Integer.parseInt(request.getParameter("page"));
-        }
+        //paging
         PagingVO paging = new PagingVO();
-        paging.setPage(pageNo);
-        paging.setTotalCount(12); //임의
+        paging.setTotalCount(service.getBoardCnt());
 
-        list = service.selectBoard(pageNo);
+        int currentPage = 1;
+        if (request.getParameter("page") != null) {
+            currentPage = Integer.parseInt(request.getParameter("page"));
+        }
 
-        if("write".equals(command)) {
+        paging.setCurrentPage(currentPage);
+
+        list = service.getBoardListWithPaging(currentPage);
+
+        paging.setEndPage( ((int) Math.ceil(paging.getCurrentPage() / (double) paging.getDisplayPage())) * paging.getDisplayPage() );	//Math.ceil : 소수점 이하를 올림한다
+        paging.setBeginPage( paging.getEndPage() - (paging.getDisplayPage() - 1) );
+        paging.setTotalPage( (int) Math.ceil(paging.getTotalCount() / (double) paging.getDisplayRow()) );
+        if (paging.getEndPage() > paging.getTotalPage()) {
+            paging.setEndPage(paging.getTotalPage());
+        }
+
+        //command check
+        if("add".equals(command)){ // 글 추가
+            service.insertBoard(vo);
+
+        }else if("get".equals(command)){ // 글 읽기
+            service.updateBoardCnt(article_no);
+            vo = service.getBoardContent(article_no);
+            request.setAttribute("vo",vo);
             dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
-        }else if("add".equals(command)){
-            service.addBoard(vo);
-            dispatcher = context.getRequestDispatcher("/static/board.jsp");
-        }else if("select".equals(command)){
-            vo = service.searchById(article_no);
-            request.setAttribute("title",vo.getTitle());
-            request.setAttribute("content",vo.getContent());
+
+        }else if("delete".equals(command)) { // 글 삭제
+            if (service.checkPassword(article_no, password) == 0) {
+//                response.sendRedirect(request.getHeader("referer"));
+                return;
+            }
+            service.deleteContent(Integer.parseInt(article_no));
+
+        }else if("update".equals(command)){ // 글 수정
+            service.updateContent(vo);
+
+        }else if("write".equals(command)) {   // 글작성 페이지로 이동
+                dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
+
+        }else if("updateForm".equals(command)) { // 수정 페이지로 이동
+            if(service.checkPassword(article_no,password)==0){
+//                response.sendRedirect(request.getHeader("referer"));
+                return;
+            }
+            vo = service.getBoardContent(article_no);
+            request.setAttribute("vo",vo);
             dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
+
+        }else if("updateCheck".equals(command)){ // 수정 비밀번호 체크 페이지
+            request.setAttribute("article_no",article_no);
+            dispatcher = context.getRequestDispatcher("/static/checkForm.jsp");
+
+        }else if("deleteCheck".equals(command)){ // 삭제 비밀번호 체크 페이지
+            request.setAttribute("article_no",article_no);
+            dispatcher = context.getRequestDispatcher("/static/checkForm.jsp");
         }
 
         request.setAttribute("paging",paging);

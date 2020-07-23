@@ -2,6 +2,7 @@ package Board;
 
 public class BoardVO {
 
+    private String row_num;
     private String article_no;
     private String writer_id;
     private String writer_name;
@@ -18,13 +19,22 @@ public class BoardVO {
     public BoardVO() {
     }
 
-    public BoardVO(String article_no, String writer_id, String writer_name, String title, String password, String content) {
+    public BoardVO(String row_num, String article_no, String writer_id, String writer_name, String title, String password, String content) {
+        this.row_num = row_num;
         this.article_no = article_no;
         this.writer_id = writer_id;
         this.writer_name = writer_name;
         this.title = title;
         this.password = password;
         this.content = content;
+    }
+
+    public String getRow_num() {
+        return row_num;
+    }
+
+    public void setRow_num(String row_num) {
+        this.row_num = row_num;
     }
 
     public String getArticle_no() {
@@ -101,8 +111,9 @@ public class BoardVO {
 
     @Override
     public String toString() {
-        return "BoardVO{" +
-                "article_no='" + article_no + '\'' +
+        return "Board{" +
+                "row_num='" + row_num + '\'' +
+                ", article_no='" + article_no + '\'' +
                 ", writer_id='" + writer_id + '\'' +
                 ", writer_name='" + writer_name + '\'' +
                 ", title='" + title + '\'' +

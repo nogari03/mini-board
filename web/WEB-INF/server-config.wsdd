@@ -15,11 +15,10 @@
     <res-auth>Container</res-auth>
   </resource-ref>
 
-  <!-- Main Filter -->
-<!--  <display-name>ServletFilter</display-name>-->
+<!--  <display-name>MainFilter</display-name>-->
 <!--  <filter>-->
-<!--    <filter-name>Filter</filter-name>-->
-<!--    <filter-class>main.sec01.miniProject.Common.Filter</filter-class>-->
+<!--    <filter-name>MainFilter</filter-name>-->
+<!--    <filter-class>Common.MainFilter</filter-class>-->
 <!--    <init-param>-->
 <!--      <param-name>encoding</param-name>-->
 <!--      <param-value>utf-8</param-value>-->
@@ -27,8 +26,8 @@
 <!--  </filter>-->
 
 <!--  <filter-mapping>-->
-<!--    <filter-name>Filter</filter-name>-->
-<!--    <url-pattern>*.do</url-pattern>-->
+<!--    <filter-name>MainFilter</filter-name>-->
+<!--    <url-pattern>/board/*</url-pattern>-->
 <!--  </filter-mapping>-->
 
 </web-app>

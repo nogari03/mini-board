@@ -15,6 +15,18 @@ public class BoardDAO {
     private PreparedStatement pstmt;
     private DataSource dataFactory;
 
+
+    private static final String BOARD_INSERT = "insert all into ARTICLE values (ARTICLE_SEQ.nextval, ?, ?, ?, ?,sysdate,sysdate,0) into ARTICLE_CONTENT values(ARTICLE_SEQ.nextval, ?) select from DUAL";
+    private static final String BOARD_GET_BY_PAGING = "select * from ( select * from (select ROWNUM as row_num,article.* from article )where row_num >= ? )where row_num <= ?";
+    private static final String BOARD_UPDATE_CNT = "update article set read_cnt=read_cnt+1 where article_no=?";
+    private static final String BOARD_GET_CNT = "SELECT COUNT(*) FROM article";
+    private static final String BOARD_GET_CONTENT = "select article.article_no, ARTICLE.writer_name, ARTICLE.title,ARTICLE_CONTENT.CONTENT from article, article_content where article.article_no = ? AND article_content.article_no = ?";
+    private static final String BOARD_DELETE_CONTENT_1 = "delete from article where article_no=?";
+    private static final String BOARD_DELETE_CONTENT_2 = "delete from ARTICLE_CONTENT where ARTICLE_NO=?";
+    private static final String BOARD_UPDATE_CONTENT_1 = "update article set title=? where article_no=?";
+    private static final String BOARD_UPDATE_CONTENT_2 = "update article_content set content=? where article_no=?";
+    private static final String CHECK_PWD = "select password from article where article_no = ?";
+
     public BoardDAO() {
         try {
             Context ctx = new InitialContext();
@@ -25,7 +37,60 @@ public class BoardDAO {
         }
     }
 
-    public List<BoardVO> listBoard() {
+    public void insertBoard(BoardVO vo) {
+        System.out.println("==> Insert Board");
+        try {
+            con = dataFactory.getConnection();
+            pstmt = con.prepareStatement(BOARD_INSERT);
+            pstmt.setString(1, vo.getWriter_id());
+            pstmt.setString(2, vo.getWriter_name());
+            pstmt.setString(3, vo.getTitle());
+            pstmt.setString(4, vo.getPassword());
+            pstmt.setString(5, vo.getContent());
+
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.close();
+            pstmt.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BoardVO getBoardContent(String article_no) {
+        System.out.println("==> Get Board Content");
+        BoardVO vo = new BoardVO();
+        try {
+            con = dataFactory.getConnection();
+            pstmt = con.prepareStatement(BOARD_GET_CONTENT);
+            pstmt.setString(1, article_no);
+            pstmt.setString(2, article_no);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String article_num = rs.getString("article_no");
+                String writer_name = rs.getString("writer_name");
+                String title = rs.getString("title");
+                String content = rs.getString("content");
+
+                vo.setArticle_no(article_num);
+                vo.setWriter_name(writer_name);
+                vo.setTitle(title);
+                vo.setContent(content);
+            }
+            rs.close();
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return vo;
+    }
+
+    public List<BoardVO> getBoardList() {
+        System.out.println("==> Get BoardList");
         List<BoardVO> list = new ArrayList<>();
         try {
             con = dataFactory.getConnection();
@@ -64,81 +129,25 @@ public class BoardDAO {
         return list;
     }
 
-    public BoardVO searchById(String article_no) {
-        BoardVO vo = new BoardVO();
-        try {
-            con = dataFactory.getConnection();
-            String query = "select ARTICLE.TITLE,ARTICLE_CONTENT.CONTENT from article, article_content where article.article_no = ? AND article_content.article_no = ?";
-            pstmt = con.prepareStatement(query);
-            pstmt.setString(1, article_no);
-            pstmt.setString(2, article_no);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String title = rs.getString("title");
-                String content = rs.getString("content");
-
-                vo.setTitle(title);
-                vo.setContent(content);
-            }
-            rs.close();
-            pstmt.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return vo;
-    }
-
-    public void addBoard(BoardVO vo) {
-        System.out.println(vo.getArticle_no());
-        System.out.println(vo.getContent());
-        try {
-            con = dataFactory.getConnection();
-            String query = "insert all " +
-                    "into ARTICLE values (?,?,?,?,?,sysdate,sysdate,0)" +
-                    "into ARTICLE_CONTENT values(?,?)" +
-                    "select * from DUAL";
-
-            pstmt = con.prepareStatement(query);
-            pstmt.setString(1, vo.getArticle_no());
-            pstmt.setString(2, vo.getWriter_id()); // 여기 MemberVO로
-            pstmt.setString(3, vo.getWriter_name()); // 여기 MemberVO로
-            pstmt.setString(4, vo.getTitle());
-            pstmt.setString(5, vo.getPassword());
-
-            pstmt.setString(6, vo.getArticle_no());
-            pstmt.setString(7, vo.getContent());
-
-            ResultSet rs = pstmt.executeQuery();
-
-            rs.close();
-            pstmt.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<BoardVO> selectBoard(int page) {
+    public List<BoardVO> getBoardListWithPaging(int currentPage) {
+        System.out.println("==> getBoardListWithPaging");
         List<BoardVO> list = new ArrayList<>();
 
-        int startNum = (page-1)*10+1;
-        int endNum = page*10;
+        int startNum = (currentPage-1)*10+1;
+        int endNum = currentPage*10;
         try {
             con = dataFactory.getConnection();
-
 
             // sql = select * from ( select rownum as row_num,article_no from article) where row_num >= 11 AND row_num <=20 // 성능 문제 야기
             // sql = select * from ( select rownum as row_num,article_no from article where row_num >= 11) where row_num <= 20 // this best
-            String query = "select * from ( select ARTICLE_NO as row_num,article.* from article where ARTICLE_NO >= ?) where ARTICLE_NO <= ?";
-            pstmt = con.prepareStatement(query);
+            pstmt = con.prepareStatement(BOARD_GET_BY_PAGING);
             pstmt.setInt(1, startNum);
             pstmt.setInt(2, endNum);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String article_no = rs.getString("row_num");
+                String row_num = rs.getString("row_num");
+                String article_no = rs.getString("article_no");
                 String writer_id = rs.getString("writer_id");
                 String writer_name = rs.getString("writer_name");
                 String title = rs.getString("title");
@@ -148,6 +157,7 @@ public class BoardDAO {
                 int read_cnt = rs.getInt("read_cnt");
 
                 BoardVO vo = new BoardVO();
+                vo.setRow_num(row_num);
                 vo.setArticle_no(article_no);
                 vo.setWriter_id(writer_id);
                 vo.setWriter_name(writer_name);
@@ -169,41 +179,112 @@ public class BoardDAO {
         }
         return list;
     }
+
+    public void updateBoardCnt(String article_no){
+        System.out.println("==> Update BoardCnt");
+        try {
+            con = dataFactory.getConnection();
+            pstmt = con.prepareStatement(BOARD_UPDATE_CNT);
+            pstmt.setString(1, article_no);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.close();
+            pstmt.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getBoardCnt(){
+        System.out.println("==> Get BoardCnt");
+        int count = 0;
+        try {
+            con = dataFactory.getConnection();
+            pstmt = con.prepareStatement(BOARD_GET_CNT);
+
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                count = rs.getInt(1);
+            }
+
+            rs.close();
+            pstmt.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public void deleteContent(int article_no){
+        System.out.println("==> Delete BoardContent");
+        try {
+            con = dataFactory.getConnection();
+            pstmt = con.prepareStatement(BOARD_DELETE_CONTENT_1);
+            pstmt.setInt(1, article_no);
+            pstmt.executeQuery();
+
+            pstmt = con.prepareStatement(BOARD_DELETE_CONTENT_2);
+            pstmt.setInt(1, article_no);
+            pstmt.executeQuery();
+
+            pstmt.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateContent(BoardVO vo){
+        System.out.println("==> updateContent");
+
+        try {
+            con = dataFactory.getConnection();
+
+            pstmt = con.prepareStatement(BOARD_UPDATE_CONTENT_1);
+            pstmt.setString(1, vo.getTitle());
+            pstmt.setString(2, vo.getArticle_no());
+            pstmt.executeQuery();
+
+            pstmt = con.prepareStatement(BOARD_UPDATE_CONTENT_2);
+            pstmt.setString(1, vo.getContent());
+            pstmt.setString(2, vo.getArticle_no());
+            pstmt.executeQuery();
+
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getPassword(String article_no){
+        System.out.println("==> getPassword");
+
+        String password =null;
+        try {
+            con = dataFactory.getConnection();
+
+            pstmt = con.prepareStatement(CHECK_PWD);
+            pstmt.setString(1, article_no);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+                password = rs.getString("password");
+            }
+
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return password;
+    }
 }
-//    public void updateOrder(OrderVO vo){
-//        try{
-//            con = dataFactory.getConnection();
-//            String query =
-//                    "update orderitems set prod_id=?, quantity=?, item_price=? where order_num = ? AND prod_id= ? ";
-//            pstmt = con.prepareStatement(query);
-//            pstmt.setString(1,vo.getProd_id());
-//            pstmt.setInt(2, Integer.parseInt(vo.getQuantity()));
-//            pstmt.setInt(3, Integer.parseInt(vo.getItem_price()));
-//            pstmt.setInt(4, Integer.parseInt(vo.getOrder_num()));
-//            pstmt.setString(5,vo.getProd_id());
-//
-//            pstmt.executeQuery();
-//            pstmt.close();
-//            con.close();
-//
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-//    public void deleteOrder(String id){
-//        try
-//        {
-//            con = dataFactory.getConnection();
-//            String query = "delete from orderitems where order_num = ?";
-//            pstmt = con.prepareStatement(query);
-//            pstmt.setString(1, id);
-//            pstmt.executeQuery();
-//
-//            pstmt.close();
-//            con.close();
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
 
 

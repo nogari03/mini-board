@@ -11,35 +11,31 @@
 </head>
 <body>
     <table>
-        <caption>[<a href="/board?command=write">게시글쓰기</a>]</caption>
+        <tr>
+            <th colspan="4">
+                [<a href="/board?command=write">게시글쓰기</a>]
+            </th>
+        </tr>
         <tr>
             <th>번호</th>
             <th>제목</th>
             <th>작성자</th>
             <th>조회수</th>
         </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <c:forEach items="${list}" var="BoardVO" >
+        <c:forEach items="${list}" var="Board" >
             <tr>
-                <th>${BoardVO.article_no}</th>
-                <th><a href="/board?command=select&article_no=${BoardVO.article_no}">${BoardVO.title}</a></th>
-                <th>${BoardVO.writer_name}</th>
-                <th>${BoardVO.read_cnt}</th>
+                <th width="50">${Board.row_num}</th>
+                <th width="300"><a href="/board?command=get&article_no=${Board.article_no}">${Board.title}</a></th>
+                <th width="80">${Board.writer_name}</th>
+                <th width="80">${Board.read_cnt}</th>
             </tr>
         </c:forEach>
         <tr>
             <th colspan="4" align="left">
                 <jsp:include page="/static/paging.jsp">
-                    <jsp:param value="${paging.page}" name="page"/>
+                    <jsp:param value="${paging.currentPage}" name="page"/>
                     <jsp:param value="${paging.beginPage}" name="beginPage"/>
                     <jsp:param value="${paging.endPage}" name="endPage"/>
-                    <jsp:param value="${paging.prev}" name="prev"/>
-                    <jsp:param value="${paging.next}" name="next"/>
                 </jsp:include>
             </th>
         </tr>
