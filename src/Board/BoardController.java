@@ -1,6 +1,8 @@
 package Board;
 
 import Common.PagingVO;
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -24,11 +26,11 @@ public class BoardController extends HttpServlet {
     private void doHandle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         //필터 적용시 삭제
-        request.setCharacterEncoding("utf-8");
-        response.setContentType("text/html;charset=utf-8");
-        response.setCharacterEncoding("utf-8");
+//        request.setCharacterEncoding("utf-8");
+//        response.setContentType("text/html;charset=utf-8");
+//        response.setCharacterEncoding("utf-8");
 
-        BoardService service = new BoardService();
+        BoardService service = new BoardServiceImpl();
 
         String row_num = request.getParameter("row_num");
         String article_no = request.getParameter("article_no");
@@ -81,20 +83,25 @@ public class BoardController extends HttpServlet {
 
         }else if("delete".equals(command)) { // 글 삭제
             if (service.checkPassword(article_no, password) == 0) {
-//                response.sendRedirect(request.getHeader("referer"));
+                response.sendRedirect(request.getHeader("referer"));
                 return;
             }
             service.deleteContent(Integer.parseInt(article_no));
 
-        }else if("update".equals(command)){ // 글 수정
-            service.updateContent(vo);
+//        }else if("update".equals(command)){ // 글 수정
+//            //file
+//            String file = multi.getFilesystemName("file");
+//            service.uploadFile(file,temp_article_no);
+//            System.out.println("file upload check");
+//            vo = new BoardVO(temp_article_no,temp_title,temp_content);
+//            service.updateContent(vo);
 
         }else if("write".equals(command)) {   // 글작성 페이지로 이동
                 dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
 
         }else if("updateForm".equals(command)) { // 수정 페이지로 이동
             if(service.checkPassword(article_no,password)==0){
-//                response.sendRedirect(request.getHeader("referer"));
+                response.sendRedirect(request.getHeader("referer"));
                 return;
             }
             vo = service.getBoardContent(article_no);

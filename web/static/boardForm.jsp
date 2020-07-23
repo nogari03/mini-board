@@ -50,19 +50,22 @@
             <tr>
                 <td colspan="2">
                     [<a href="/board">목록</a>] [<a href="/board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
+                    <c:if test="${not empty vo.fileName}">
+                    [<a href="/download?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
+                    </c:if>
                 </td>
             </tr>
         </table>
     </c:when>
     <c:when test="${command eq 'updateForm'}">
-        <form name="updateForm" method="post" action="/board">
+        <form name="updateForm" method="post" action="/upload" enctype="multipart/form-data">
             <p >번호 :</p>
             <p>${vo.article_no}</p>
             <p>제목 :</p>
             <p><input type="text" name="title" value="${vo.title}"></p>
             <p>내용 :</p>
             <p><textarea name="content" >${vo.content}</textarea></p>
-            <p><input type="submit" value="글 수정"></p>
+            <p><input type="submit" value="글 수정"> 파일첨부: <input type="file" id="file" name="file" onchange="file(this.id)"></p>
             <p><input type="hidden" name="command" value="update"></p>
             <p><input type="hidden" name="article_no" value="${vo.article_no}"></p>
         </form>

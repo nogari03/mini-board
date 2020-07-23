@@ -13,10 +13,17 @@ public class BoardVO {
     private int read_cnt;
 
     private String content;
+    private String fileName;
 
 
 
     public BoardVO() {
+    }
+
+    public BoardVO(String article_no, String title, String content) {
+        this.article_no = article_no;
+        this.title = title;
+        this.content = content;
     }
 
     public BoardVO(String row_num, String article_no, String writer_id, String writer_name, String title, String password, String content) {
@@ -109,9 +116,17 @@ public class BoardVO {
         this.content = content;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     @Override
     public String toString() {
-        return "Board{" +
+        return "BoardVO{" +
                 "row_num='" + row_num + '\'' +
                 ", article_no='" + article_no + '\'' +
                 ", writer_id='" + writer_id + '\'' +
@@ -122,6 +137,7 @@ public class BoardVO {
                 ", moddate='" + moddate + '\'' +
                 ", read_cnt=" + read_cnt +
                 ", content='" + content + '\'' +
+                ", fileName='" + fileName + '\'' +
                 '}';
     }
 }

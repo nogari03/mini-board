@@ -20,12 +20,13 @@ public class BoardDAO {
     private static final String BOARD_GET_BY_PAGING = "select * from ( select * from (select ROWNUM as row_num,article.* from article )where row_num >= ? )where row_num <= ?";
     private static final String BOARD_UPDATE_CNT = "update article set read_cnt=read_cnt+1 where article_no=?";
     private static final String BOARD_GET_CNT = "SELECT COUNT(*) FROM article";
-    private static final String BOARD_GET_CONTENT = "select article.article_no, ARTICLE.writer_name, ARTICLE.title,ARTICLE_CONTENT.CONTENT from article, article_content where article.article_no = ? AND article_content.article_no = ?";
+    private static final String BOARD_GET_CONTENT = "select article.article_no, ARTICLE.writer_name, ARTICLE.title,ARTICLE_CONTENT.CONTENT,ARTICLE_CONTENT.FILENAME from article, article_content where article.article_no = ? AND article_content.article_no = ?";
     private static final String BOARD_DELETE_CONTENT_1 = "delete from article where article_no=?";
     private static final String BOARD_DELETE_CONTENT_2 = "delete from ARTICLE_CONTENT where ARTICLE_NO=?";
     private static final String BOARD_UPDATE_CONTENT_1 = "update article set title=? where article_no=?";
     private static final String BOARD_UPDATE_CONTENT_2 = "update article_content set content=? where article_no=?";
     private static final String CHECK_PWD = "select password from article where article_no = ?";
+    private static final String FILE_UPLOAD = "update ARTICLE_CONTENT set FILENAME=? where ARTICLE_NO=?";
 
     public BoardDAO() {
         try {
@@ -74,11 +75,14 @@ public class BoardDAO {
                 String writer_name = rs.getString("writer_name");
                 String title = rs.getString("title");
                 String content = rs.getString("content");
+                String fileName = rs.getString("fileName");
 
                 vo.setArticle_no(article_num);
                 vo.setWriter_name(writer_name);
                 vo.setTitle(title);
                 vo.setContent(content);
+                vo.setFileName(fileName);
+
             }
             rs.close();
             pstmt.close();
@@ -284,6 +288,30 @@ public class BoardDAO {
             e.printStackTrace();
         }
         return password;
+    }
+
+    public int uploadFile(String file,String article_no){
+        System.out.println("==> uploadFile");
+
+        try {
+            con = dataFactory.getConnection();
+
+            pstmt = con.prepareStatement(FILE_UPLOAD);
+            pstmt.setString(1, file);
+            pstmt.setString(2,article_no);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+                return 1;
+            }
+
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
 
