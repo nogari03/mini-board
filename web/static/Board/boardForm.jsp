@@ -18,15 +18,17 @@
 <body>
 <c:choose>
     <c:when test="${command eq 'write'}">
-        <form name="boardForm" method="post" action="/board">
+        <form name="boardForm" method="post" action="/upload" enctype="multipart/form-data">
             <p >제목 :</p>
             <p><input type="text" name="title"></p>
             <p>비밀번호 :</p>
             <p><input type="password" name="password"></p>
             <p>내용 :</p>
             <p><textarea name="content" ></textarea></p>
-            <p><input type="submit" value="새 글 등록"></p>
+            <p><input type="submit" value="새 글 등록">  파일첨부: <input type="file" name="file"></p>
             <p><input type="hidden" name="command" value="add"></p>
+            <input type="hidden" name="writer_id" value="${sessionScope.member_id}">
+            <input type="hidden" name="writer_name" value="${sessionScope.name}">
         </form>
     </c:when>
     <c:when test="${command eq 'get'}">
@@ -49,7 +51,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    [<a href="/board">목록</a>] [<a href="/board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
+                    [<a href="/board">목록</a>] [<a href="./board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
                     <c:if test="${not empty vo.fileName}">
                     [<a href="/download?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
                     </c:if>
@@ -65,7 +67,7 @@
             <p><input type="text" name="title" value="${vo.title}"></p>
             <p>내용 :</p>
             <p><textarea name="content" >${vo.content}</textarea></p>
-            <p><input type="submit" value="글 수정"> 파일첨부: <input type="file" id="file" name="file" onchange="file(this.id)"></p>
+            <p><input type="submit" value="글 수정"> 파일첨부: <input type="file" name="file"></p>
             <p><input type="hidden" name="command" value="update"></p>
             <p><input type="hidden" name="article_no" value="${vo.article_no}"></p>
         </form>

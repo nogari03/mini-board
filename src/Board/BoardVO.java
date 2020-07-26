@@ -26,7 +26,7 @@ public class BoardVO {
         this.content = content;
     }
 
-    public BoardVO(String row_num, String article_no, String writer_id, String writer_name, String title, String password, String content) {
+    public BoardVO(String row_num, String article_no, String writer_id, String writer_name, String title, String password, String content, String fileName) {
         this.row_num = row_num;
         this.article_no = article_no;
         this.writer_id = writer_id;
@@ -34,6 +34,7 @@ public class BoardVO {
         this.title = title;
         this.password = password;
         this.content = content;
+        this.fileName = fileName;
     }
 
     public String getRow_num() {

@@ -42,15 +42,59 @@ public class BoardController extends HttpServlet {
 
         String command = request.getParameter("command");
 
-        BoardVO vo = new BoardVO(row_num,article_no,writer_id,writer_name,title,password,content);
+        BoardVO vo;
 
         List<BoardVO> list = null;
 
         ServletContext context = this.getServletContext();
         RequestDispatcher dispatcher;
 
-        dispatcher = context.getRequestDispatcher("/static/board.jsp");
+        dispatcher = context.getRequestDispatcher("/static/Board/board.jsp");
 
+        //command check
+
+
+        if("get".equals(command)){ // 글 읽기
+            service.updateBoardCnt(article_no);
+            vo = service.getBoardContent(article_no);
+            request.setAttribute("vo",vo);
+            dispatcher = context.getRequestDispatcher("/static/Board/boardForm.jsp");
+
+        }else if("delete".equals(command)) { // 글 삭제
+            if (service.checkPassword(article_no, password) == 0) {
+                response.sendRedirect(request.getHeader("referer"));
+                return;
+            }
+            service.deleteContent(Integer.parseInt(article_no));
+
+//        }else if("update".equals(command)){ // 글 수정
+//            //file
+//            String file = multi.getFilesystemName("file");
+//            service.uploadFile(file,temp_article_no);
+//            System.out.println("file upload check");
+//            vo = new BoardVO(temp_article_no,temp_title,temp_content);
+//            service.updateContent(vo);
+
+        }else if("write".equals(command)) {   // 글작성 페이지로 이동
+                dispatcher = context.getRequestDispatcher("/static/Board/boardForm.jsp");
+
+        }else if("updateForm".equals(command)) { // 수정 페이지로 이동
+            if(service.checkPassword(article_no,password)==0){
+                response.sendRedirect(request.getHeader("referer"));
+                return;
+            }
+            vo = service.getBoardContent(article_no);
+            request.setAttribute("vo",vo);
+            dispatcher = context.getRequestDispatcher("/static/Board/boardForm.jsp");
+
+        }else if("updateCheck".equals(command)){ // 수정 비밀번호 체크 페이지
+            request.setAttribute("article_no",article_no);
+            dispatcher = context.getRequestDispatcher("/static/Board/checkForm.jsp");
+
+        }else if("deleteCheck".equals(command)){ // 삭제 비밀번호 체크 페이지
+            request.setAttribute("article_no",article_no);
+            dispatcher = context.getRequestDispatcher("/static/Board/checkForm.jsp");
+        }
         //paging
         PagingVO paging = new PagingVO();
         paging.setTotalCount(service.getBoardCnt());
@@ -69,52 +113,6 @@ public class BoardController extends HttpServlet {
         paging.setTotalPage( (int) Math.ceil(paging.getTotalCount() / (double) paging.getDisplayRow()) );
         if (paging.getEndPage() > paging.getTotalPage()) {
             paging.setEndPage(paging.getTotalPage());
-        }
-
-        //command check
-        if("add".equals(command)){ // 글 추가
-            service.insertBoard(vo);
-
-        }else if("get".equals(command)){ // 글 읽기
-            service.updateBoardCnt(article_no);
-            vo = service.getBoardContent(article_no);
-            request.setAttribute("vo",vo);
-            dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
-
-        }else if("delete".equals(command)) { // 글 삭제
-            if (service.checkPassword(article_no, password) == 0) {
-                response.sendRedirect(request.getHeader("referer"));
-                return;
-            }
-            service.deleteContent(Integer.parseInt(article_no));
-
-//        }else if("update".equals(command)){ // 글 수정
-//            //file
-//            String file = multi.getFilesystemName("file");
-//            service.uploadFile(file,temp_article_no);
-//            System.out.println("file upload check");
-//            vo = new BoardVO(temp_article_no,temp_title,temp_content);
-//            service.updateContent(vo);
-
-        }else if("write".equals(command)) {   // 글작성 페이지로 이동
-                dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
-
-        }else if("updateForm".equals(command)) { // 수정 페이지로 이동
-            if(service.checkPassword(article_no,password)==0){
-                response.sendRedirect(request.getHeader("referer"));
-                return;
-            }
-            vo = service.getBoardContent(article_no);
-            request.setAttribute("vo",vo);
-            dispatcher = context.getRequestDispatcher("/static/boardForm.jsp");
-
-        }else if("updateCheck".equals(command)){ // 수정 비밀번호 체크 페이지
-            request.setAttribute("article_no",article_no);
-            dispatcher = context.getRequestDispatcher("/static/checkForm.jsp");
-
-        }else if("deleteCheck".equals(command)){ // 삭제 비밀번호 체크 페이지
-            request.setAttribute("article_no",article_no);
-            dispatcher = context.getRequestDispatcher("/static/checkForm.jsp");
         }
 
         request.setAttribute("paging",paging);

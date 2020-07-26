@@ -16,8 +16,8 @@ public class BoardDAO {
     private DataSource dataFactory;
 
 
-    private static final String BOARD_INSERT = "insert all into ARTICLE values (ARTICLE_SEQ.nextval, ?, ?, ?, ?,sysdate,sysdate,0) into ARTICLE_CONTENT values(ARTICLE_SEQ.nextval, ?) select from DUAL";
-    private static final String BOARD_GET_BY_PAGING = "select * from ( select * from (select ROWNUM as row_num,article.* from article )where row_num >= ? )where row_num <= ?";
+    private static final String BOARD_INSERT = "insert all into ARTICLE values (ARTICLE_SEQ.nextval, ?, ?, ?, ?,sysdate,sysdate,0) into ARTICLE_CONTENT values(ARTICLE_SEQ.nextval, ?, ?) select * from DUAL";
+    private static final String BOARD_GET_BY_PAGING = "select * from ( select * from (select ROWNUM as row_num,article.* from article ORDER BY ARTICLE_NO DESC )where row_num >= ? )where row_num <= ?";
     private static final String BOARD_UPDATE_CNT = "update article set read_cnt=read_cnt+1 where article_no=?";
     private static final String BOARD_GET_CNT = "SELECT COUNT(*) FROM article";
     private static final String BOARD_GET_CONTENT = "select article.article_no, ARTICLE.writer_name, ARTICLE.title,ARTICLE_CONTENT.CONTENT,ARTICLE_CONTENT.FILENAME from article, article_content where article.article_no = ? AND article_content.article_no = ?";
@@ -48,6 +48,7 @@ public class BoardDAO {
             pstmt.setString(3, vo.getTitle());
             pstmt.setString(4, vo.getPassword());
             pstmt.setString(5, vo.getContent());
+            pstmt.setString(6, vo.getFileName());
 
             ResultSet rs = pstmt.executeQuery();
 
