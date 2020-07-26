@@ -16,7 +16,7 @@
 </head>
 <body>
     <nav class = "navbar navbar-default">
-            <li><a href="book">방명록</a></li>
+            <li><a href="/guestbook?command=123">방명록</a></li>
             <li><a href="/board">게시판</a></li>
             <li><a href="/static/Member/logIn.jsp">로그인</a></li>
             <li><a href="/static/Member/addMember.jsp">회원가입</a></li>

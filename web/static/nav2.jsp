@@ -20,7 +20,7 @@
     System.out.println(name);
 %>
 <nav class = "navbar navbar-default">
-        <li class="nav_menu"><a href="book">방명록</a></li>
+        <li class="nav_menu"><a href="/guestbook?command=123">방명록</a></li>
         <li class="nav_menu"><a href="/board">게시판</a></li>
 
         <div class="mx-auto order-0">

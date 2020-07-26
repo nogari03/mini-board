@@ -82,7 +82,7 @@
                     <td colspan="2">
                         [<a href="/board">목록</a>] [<a href="./board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
                         <c:if test="${not empty vo.fileName}">
-                        [<a href="/download?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
+                        [<a href="/download1?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
                         </c:if>
                     </td>
                 </tr>
@@ -97,7 +97,7 @@
                         <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
                     </th>
                 </thead>
-                    <form name="updateForm" method="post" action="/upload" enctype="multipart/form-data">
+                    <form name="updateForm" method="post" action="/upload1" enctype="multipart/form-data">
                         <tr>
                             <th>번호</th>
                             <td>${vo.article_no}</td>

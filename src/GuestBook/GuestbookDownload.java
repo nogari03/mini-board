@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//@WebServlet("/download")
+@WebServlet("/download")
 public class GuestbookDownload extends HttpServlet{
 
    @Override
@@ -27,7 +27,7 @@ public class GuestbookDownload extends HttpServlet{
       req.setCharacterEncoding("utf-8");
       resp.setContentType("text/html;charset=utf-8");
       String fileName = (String) req.getParameter("fileName");
-      String fileRepo = "/Users/sylvia.p/eclipse-workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/MiniProject/upload";
+      String fileRepo = "/Users/nogari03/Desktop";
       
       System.out.println("다운로드 서블릿 파일 이름:"+fileName);
       

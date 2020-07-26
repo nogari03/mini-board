@@ -9,35 +9,76 @@
 
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>방명록 목록보기</title>
 </head>
 <body>
-		
+<c:choose>
+	<c:when test="${empty sessionScope.name}">
+		<jsp:include page="../nav1.jsp" />
+	</c:when>
+	<c:when test="${not empty sessionScope.name}">
+		<jsp:include page="../nav2.jsp" />
+	</c:when>
+</c:choose>
+		<form method="post" action="/upload" enctype="multipart/form-data">
+		<table>
+			<tr>
+				<td>이름: </td>
+				<td><input type="text" name="guest_name" required></td>
+			</tr>
+			<tr>
+				<td>암호: </td>
+				<td><input type="text" name="password" required></td>
+			</tr>
+			<tr>
+				<td>메시지:</td>
+				<td><textarea name=message rows="5" cols="40" required></textarea></td>
+			</tr>
+			</table>
+			<table>
+			<tr>
+				<td><input type="submit" value="메시지 남기기"></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>
+				
+					<h4 style="color: red">파일첨부:</h4>
+				</td>
+				<td><input type="file" id="fileName"  value="파일선택" name="fileName"
+					style="color: red"></td>
+			</tr>
+		</table>
+		<input type="hidden" name="command" value="add">
+	</form>
+	<br>
+	<hr>
+	<hr>
+	<br>
+	<br>
 	<c:if test="${empty guestbooksList }">
 			등록 된 글이 없습니다.<br>
-			<a href="/MiniProject/guestbookForm.jsp">글쓰기</a>
+			<a href="./guestbookForm.jsp">글쓰기</a>
 	</c:if>
 	<c:if test="${not empty guestbooksList}">
 			
-			<table style="margin: 0 auto;"border="1">
+			<table style="margin: 0 auto;" border="1" width="500">
 		<c:forEach var="GuestbookVO" items="${guestbooksList }"
 			varStatus="GuestbookNum">
 				<tr>
 					<td>메세지 번호: ${GuestbookVO.message_id }<br> 
 						손님 이름: ${GuestbookVO.guest_name }<br> 
 						메세지: ${GuestbookVO.message }<br>
-						<a href = "/MiniProject/delGuestbook.jsp">[삭제하기]</a> 
-						<a href="/MiniProject/checkGuest.jsp">[수정하기]</a>
+						<a href = "/static/Member/delGuestbook.jsp">[삭제하기]</a>
+						<a href="/static/Member/checkGuest.jsp">[수정하기]</a>
 					 <c:if test="${not empty GuestbookVO.fileName}">
-						<a href="/MiniProject/download?fileName=${GuestbookVO.fileName}">파일다운</a></c:if> 
+						<a href="/download?fileName=${GuestbookVO.fileName}">파일다운로드</a></c:if>
 					</td>
 				</tr>
 			</c:forEach>
 			</table>
 			<br>
-			
-				<jsp:include page="paging.jsp">
+				<jsp:include page="./paging.jsp">
 				<jsp:param  value="${paging.page}" name="page"/>
 				<jsp:param  value="${paging.beginPage}" name="beginPage"/>
 				<jsp:param  value="${paging.endPage}" name="endPage"/>

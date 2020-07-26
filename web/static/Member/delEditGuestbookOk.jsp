@@ -14,7 +14,7 @@
       
          <a href="/guestbook?command='/listGuestbooks.do'">[목록보기]</a>
          </c:when>
-         <c:when test="${command=='notdel'}">
+         <c:when test="${command=='notok'}">
          <c:out value="입력한 암호가 올바르지 않습니다. 암호를 확인해주세요. " /><br>
          <a href="/guestbook?command='/listGuestbooks.do'">[목록보기]</a>
       </c:when>

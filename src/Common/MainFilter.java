@@ -37,7 +37,7 @@ public class MainFilter implements Filter{
         PrintWriter out = response.getWriter();
         out.print("<script>");
         out.print("alert('로그인 먼저 해주세요');");
-        out.print("history.back();");
+        out.print("location.href='/static/Member/logIn.jsp';");
         out.print("</script>");
 
 //        RequestDispatcher dispatcher = request.getRequestDispatcher("/static/main.jsp");

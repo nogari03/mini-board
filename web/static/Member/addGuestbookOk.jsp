@@ -8,9 +8,9 @@
 <title>방명록 등록 완료</title>
 </head>
 <body>
-<form method = "post" action ="/MiniProject/guestbook">
+<form method = "post" action ="/guestbook">
 방명록에 메세지를 남겼습니다. <br>
- <a href="/MiniProject/guestbook?command='/listGuestbooks.do'">[목록보기]</a>
+ <a href="/guestbook?command='/listGuestbooks.do'">[목록보기]</a>
 
  	</form>
 </body>
