@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet("/board")
@@ -32,15 +33,11 @@ public class BoardController extends HttpServlet {
 
         BoardService service = new BoardServiceImpl();
 
-        String row_num = request.getParameter("row_num");
         String article_no = request.getParameter("article_no");
-        String writer_id = request.getParameter("writer_id");
-        String writer_name = request.getParameter("writer_name");
-        String title = request.getParameter("title");
         String password = request.getParameter("password");
-        String content = request.getParameter("content");
 
         String command = request.getParameter("command");
+        PrintWriter out = response.getWriter();
 
         BoardVO vo;
 
@@ -80,6 +77,10 @@ public class BoardController extends HttpServlet {
 
         }else if("updateForm".equals(command)) { // 수정 페이지로 이동
             if(service.checkPassword(article_no,password)==0){
+                out.print("<script>");
+                out.print("alert('비밀번호가 일치하지 않습니다');");
+                out.print("history.back();");
+                out.print("</script>");
                 response.sendRedirect(request.getHeader("referer"));
                 return;
             }

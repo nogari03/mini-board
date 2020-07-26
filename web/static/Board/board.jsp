@@ -3,25 +3,25 @@
 <html>
 <head>
     <title>게시판</title>
-    <style>
-    table,caption,tr,th,td{
-        border: solid 1px black;
-    }
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 </head>
 <body>
-    <table>
-        <tr>
-            <th colspan="4">
-                [<a href="/board?command=write">게시글쓰기</a>]
-            </th>
-        </tr>
-        <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>조회수</th>
-        </tr>
+<jsp:include page="../nav2.jsp" />
+<div class="container">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th colspan="4">
+                    <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
+                </th>
+            </tr>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>조회수</th>
+            </tr>
+        </thead>
         <c:forEach items="${list}" var="Board" >
             <tr>
                 <th width="50">${Board.row_num}</th>
@@ -31,7 +31,7 @@
             </tr>
         </c:forEach>
         <tr>
-            <th colspan="4" align="left">
+            <th colspan="4">
                 <jsp:include page="./paging.jsp">
                     <jsp:param value="${paging.currentPage}" name="page"/>
                     <jsp:param value="${paging.beginPage}" name="beginPage"/>
@@ -40,5 +40,6 @@
             </th>
         </tr>
     </table>
+</div>
 </body>
 </html>

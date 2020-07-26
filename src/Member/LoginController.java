@@ -56,12 +56,12 @@ public class LoginController extends HttpServlet {
 			session.setAttribute("member_id", member_id);
 			session.setAttribute("name", rst);
 			System.out.println(vo.getName());
-			response.sendRedirect("/static/Member/logInOk.jsp");
+			response.sendRedirect("/static/main.jsp");
 
 		} else if (rst.equals("")) {
 			out.print("<html><body>");
-			out.print("떙! 틀렸지롱 로그인 불가<br>");
-			out.print("<a href ='/static/Member/logIn.jsp'>로그인 화면 다시 간당</a>");
+			out.print("비밀번호 오류입니다<br>");
+			out.print("<a href ='/static/Member/logIn.jsp'>로그인화면으로</a>");
 			out.print("</body></html>");
 			System.out.println("초기화면으로 튕김");
 

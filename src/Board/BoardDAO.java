@@ -23,7 +23,7 @@ public class BoardDAO {
     private static final String BOARD_GET_CONTENT = "select article.article_no, ARTICLE.writer_name, ARTICLE.title,ARTICLE_CONTENT.CONTENT,ARTICLE_CONTENT.FILENAME from article, article_content where article.article_no = ? AND article_content.article_no = ?";
     private static final String BOARD_DELETE_CONTENT_1 = "delete from article where article_no=?";
     private static final String BOARD_DELETE_CONTENT_2 = "delete from ARTICLE_CONTENT where ARTICLE_NO=?";
-    private static final String BOARD_UPDATE_CONTENT_1 = "update article set title=? where article_no=?";
+    private static final String BOARD_UPDATE_CONTENT_1 = "update article set title=?,moddate=sysdate where article_no=?";
     private static final String BOARD_UPDATE_CONTENT_2 = "update article_content set content=? where article_no=?";
     private static final String CHECK_PWD = "select password from article where article_no = ?";
     private static final String FILE_UPLOAD = "update ARTICLE_CONTENT set FILENAME=? where ARTICLE_NO=?";

@@ -31,5 +31,6 @@
     <orderEntry type="library" name="taglibs-standard-compat-1.2.5" level="project" />
     <orderEntry type="library" name="ojdbc8" level="project" />
     <orderEntry type="library" name="cos" level="project" />
+    <orderEntry type="library" name="bootstrap" level="application" />
   </component>
 </module>

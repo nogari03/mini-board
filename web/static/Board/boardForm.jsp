@@ -3,74 +3,124 @@
 <html>
 <head>
     <title>Title</title>
-    <style>
-        table,th,tr,td{
-            border: solid 1px black;
-        }
-        th {
-            width: 50px;
-        }
-        td {
-            width: 300px;
-        }
-    </style>
+<%--    <style>--%>
+<%--        table,th,tr,td{--%>
+<%--            border: solid 1px black;--%>
+<%--        }--%>
+<%--        th {--%>
+<%--            width: 50px;--%>
+<%--        }--%>
+<%--        td {--%>
+<%--            width: 300px;--%>
+<%--        }--%>
+<%--    </style>--%>
 </head>
 <body>
+<jsp:include page="../nav2.jsp" />
 <c:choose>
     <c:when test="${command eq 'write'}">
-        <form name="boardForm" method="post" action="/upload" enctype="multipart/form-data">
-            <p >제목 :</p>
-            <p><input type="text" name="title"></p>
-            <p>비밀번호 :</p>
-            <p><input type="password" name="password"></p>
-            <p>내용 :</p>
-            <p><textarea name="content" ></textarea></p>
-            <p><input type="submit" value="새 글 등록">  파일첨부: <input type="file" name="file"></p>
-            <p><input type="hidden" name="command" value="add"></p>
-            <input type="hidden" name="writer_id" value="${sessionScope.member_id}">
-            <input type="hidden" name="writer_name" value="${sessionScope.name}">
-        </form>
+        <div class="container">
+            <table class="table table-hover">
+                <thead>
+                    <th colspan="2">
+                        <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
+                    </th>
+                    </thead>
+                    <form name="boardForm" method="post" action="/upload" enctype="multipart/form-data">
+                    <tr>
+                        <th width="100">제목 :</th>
+                        <td><input type="text" name="title"></td>
+                    </tr>
+                    <tr>
+                        <th width="100">비밀번호 :</th>
+                        <td><input type="password" name="password"></td>
+                    </tr>
+                    <tr>
+                        <th width="100">내용 :</th>
+                        <td><textarea name="content" rows="10" cols="50"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div>
+                                <p>파일첨부: <input type="file" name="file"></p>
+                                <p><input type="submit" class="btn-primary" value="새 글 등록"></p>
+                            </div>
+                        </td>
+                    </tr>
+                        <input type="hidden" name="command" value="add">
+                        <input type="hidden" name="writer_id" value="${sessionScope.member_id}">
+                        <input type="hidden" name="writer_name" value="${sessionScope.name}">
+            </form>
+            </table>
+        </div>
     </c:when>
     <c:when test="${command eq 'get'}">
-        <table>
-            <tr>
-                <th>번호</th>
-                <td>${vo.article_no}</td>
-            </tr>
-            <tr>
-                <th>작성자</th>
-                <td>${vo.writer_name}</td>
-            </tr>
-            <tr>
-                <th>제목</th>
-                <td>${vo.title}</td>
-            </tr>
-            <tr>
-                <th>내용</th>
-                <td>${vo.content}</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    [<a href="/board">목록</a>] [<a href="./board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
-                    <c:if test="${not empty vo.fileName}">
-                    [<a href="/download?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
-                    </c:if>
-                </td>
-            </tr>
-        </table>
+        <div class="container">
+            <table class="table table-hover">
+                <thead>
+                    <th colspan="2">
+                        <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
+                    </th>
+                </thead>
+                <tr>
+                    <th width="100">번호</th>
+                    <td>${vo.article_no}</td>
+                </tr>
+                <tr>
+                    <th width="100">작성자</th>
+                    <td>${vo.writer_name}</td>
+                </tr>
+                <tr>
+                    <th width="100">제목</th>
+                    <td>${vo.title}</td>
+                </tr>
+                <tr>
+                    <th width="100">내용</th>
+                    <td>${vo.content}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        [<a href="/board">목록</a>] [<a href="./board?command=updateCheck&article_no=${vo.article_no}">게시글수정</a>] [<a href="/board?command=deleteCheck&article_no=${vo.article_no}">게시글삭제</a>]
+                        <c:if test="${not empty vo.fileName}">
+                        [<a href="/download?article_no=${vo.article_no}&fileName=${vo.fileName}">파일다운</a>]
+                        </c:if>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </c:when>
     <c:when test="${command eq 'updateForm'}">
-        <form name="updateForm" method="post" action="/upload" enctype="multipart/form-data">
-            <p >번호 :</p>
-            <p>${vo.article_no}</p>
-            <p>제목 :</p>
-            <p><input type="text" name="title" value="${vo.title}"></p>
-            <p>내용 :</p>
-            <p><textarea name="content" >${vo.content}</textarea></p>
-            <p><input type="submit" value="글 수정"> 파일첨부: <input type="file" name="file"></p>
-            <p><input type="hidden" name="command" value="update"></p>
-            <p><input type="hidden" name="article_no" value="${vo.article_no}"></p>
-        </form>
+        <div class="container">
+            <table class="table table-hover">
+                <thead>
+                    <th colspan="2">
+                        <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
+                    </th>
+                </thead>
+                    <form name="updateForm" method="post" action="/upload" enctype="multipart/form-data">
+                        <tr>
+                            <th>번호</th>
+                            <td>${vo.article_no}</td>
+                        </tr>
+                        <tr>
+                            <th>제목</th>
+                            <td><input type="text" name="title" value="${vo.title}"></td>
+                        </tr>
+                        <tr>
+                            <th>내용</th>
+                            <td><textarea name="content" rows="10" cols="50">${vo.content}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p>파일첨부: <input type="file" name="file"></p>
+                                <p><input type="submit" class="btn-primary" value="글 수정"> </p>
+                            </td>
+                        </tr>
+                        <input type="hidden" name="command" value="update">
+                        <input type="hidden" name="article_no" value="${vo.article_no}">
+                    </form>
+            </table>
+        </div>
     </c:when>
 </c:choose>
 
