@@ -142,7 +142,7 @@ public class GuestbookDAO {
 		System.out.println("UIpage:   "+   page);
 	  int startNum = gp.getStartNum();
 	   int endNum = gp.getEndNum();
-		String query = "SELECT * from (select * from (select ROWNUM as row_num, guestbook_message.* from guestbook_message) where row_num >=? )where row_num <=?";
+		String query = "SELECT * from (select * from (select ROWNUM as row_num, guestbook_message.* from guestbook_message order by message_id desc) where row_num >=? )where row_num <=? ";
 		List<GuestbookVO> list = new ArrayList<GuestbookVO>();
 		try {System.out.println("try start!!!!!!!!!!!!"+startNum+"/////"+endNum);
 			conn = dataFactory.getConnection();

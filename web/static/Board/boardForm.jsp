@@ -26,7 +26,7 @@
                         <p>[<a href="/board?command=write">게시글쓰기</a>]</p>
                     </th>
                     </thead>
-                    <form name="boardForm" method="post" action="/upload" enctype="multipart/form-data">
+                    <form name="boardForm" method="post" action="/upload1" enctype="multipart/form-data">
                     <tr>
                         <th width="100">제목 :</th>
                         <td><input type="text" name="title"></td>

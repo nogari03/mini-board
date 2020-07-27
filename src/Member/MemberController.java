@@ -79,14 +79,15 @@ public class MemberController extends HttpServlet {
 			int rst = dao.delMember(memberVO);
 			if (rst == 0) {
 				out.print("<html><body>");
-				out.print("떙! 틀렸지롱  탈퇴 불가<br>");
+				out.print("탈퇴 실패<br>");
+				out.print("아이디와 비밀번호를 확인해주세요<br>");
 				out.print("<a href ='/static/Member/delMember.jsp'>다시입력하기</a>");
 				out.print("</body></html>");
 				System.out.println("왔다감---00");
 			} else if (rst == 1) {
 				out.print("<html><body>");
-				out.print("안녕......잘7ㅏ......<br>");
-				out.print("<a href ='/static/main.jsp'>초초촟초기화면</a>");
+				out.print("탈퇴처리 되었습니다");
+				out.print("<a href ='/static/main.jsp'>메인화면으로</a>");
 				out.print("</body></html>");
 				System.out.println("왔다감---11");
 			}

@@ -16,7 +16,7 @@
 			alert("비밀번호는 입력은 필수입니다. 입력하세욧!!");
 		} else {
 			delMember.method = "post";
-			delMember.action = "member";
+			delMember.action = "/member";
 			delMember.submit();
 		}
 	}

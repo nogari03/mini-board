@@ -22,6 +22,7 @@
 		<jsp:include page="../nav2.jsp" />
 	</c:when>
 </c:choose>
+<div align="center">
 		<form method="post" action="/upload" enctype="multipart/form-data">
 		<table>
 			<tr>
@@ -39,18 +40,19 @@
 			</table>
 			<table>
 			<tr>
-				<td><input type="submit" value="메시지 남기기"></td>
-				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-				<td>
-				
-					<h4 style="color: red">파일첨부:</h4>
+				<td colspan="2" >
+					<div>
+						<h4 style="color: red">파일첨부:</h4>
+						<input type="file" id="fileName"  value="파일선택" name="fileName" style="color: red">
+						<input type="submit" class="btn-primary" value="메시지 남기기">
+					</div>
 				</td>
-				<td><input type="file" id="fileName"  value="파일선택" name="fileName"
-					style="color: red"></td>
+
 			</tr>
 		</table>
 		<input type="hidden" name="command" value="add">
 	</form>
+</div>
 	<br>
 	<hr>
 	<hr>

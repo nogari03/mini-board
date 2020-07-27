@@ -8,6 +8,14 @@
 <title>방명록</title>
 </head>
 <body>
+<c:choose>
+   <c:when test="${empty sessionScope.name}">
+      <jsp:include page="../nav1.jsp" />
+   </c:when>
+   <c:when test="${not empty sessionScope.name}">
+      <jsp:include page="../nav2.jsp" />
+   </c:when>
+</c:choose>
    <c:choose>
       <c:when test="${command=='ok'}">
          <c:out value="방명록 삭제가 완료 되었습니다 " /><br>
