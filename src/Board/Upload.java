@@ -1,34 +1,26 @@
-package Common;
+package Board;
 
-import Board.BoardService;
-import Board.BoardServiceImpl;
-import Board.BoardVO;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-@WebServlet("/upload1")
-public class UploadController extends HttpServlet {
+@WebServlet("/uploadBoard")
+public class Upload extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doHandle(request, response);
+        doHandle(request,response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doHandle(request, response);
+        doHandle(request,response);
     }
 
-    private void doHandle(HttpServletRequest request, HttpServletResponse response) throws  ServletException, IOException {
+    private void doHandle(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String savePath = "/Users/nogari03/Desktop";
         int fileSize = 3 * 1024 * 1024;
         String encoding = "utf-8";
@@ -49,16 +41,15 @@ public class UploadController extends HttpServlet {
 
         BoardVO vo;
 
-        if("add".equals(command)) { // 글 추가
+        if("addBoard".equals(command)) {                                                                     // 글 추가
             vo = new BoardVO(row_num,article_no,writer_id,writer_name,title,password,content,file);
             service.insertBoard(vo);
             response.sendRedirect("/board");
 
-        }else if ("update".equals(command)) { // 글 수정
+        }else if ("updateBoard".equals(command)) {                                                               // 글 수정
             service.uploadFile(file, article_no);
             vo = new BoardVO(article_no, title, content);
             service.updateContent(vo);
-            System.out.println("file upload complete");
             response.sendRedirect("/board");
         }
     }

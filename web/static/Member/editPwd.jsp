@@ -24,7 +24,6 @@
 	</script>
 </head>
 <body>
-<jsp:include page="../nav2.jsp" />
 <div class="container">
 	<div class="col-sm-6 col-md-offset-3">
 		<h3>암호 변경</h3>

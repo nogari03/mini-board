@@ -10,13 +10,13 @@ public class MemberVO {
     public MemberVO() {
     }
 
-    
+
     public MemberVO(String member_id, String name, String password, String regdate) {
         this.member_id = member_id;
         this.name = name;
         this.password = password;
         this.regdate = regdate;
-        
+
     }
 
     public String getMember_id() {

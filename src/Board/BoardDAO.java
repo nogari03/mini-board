@@ -39,7 +39,6 @@ public class BoardDAO {
     }
 
     public void insertBoard(BoardVO vo) {
-        System.out.println("==> Insert Board");
         try {
             con = dataFactory.getConnection();
             pstmt = con.prepareStatement(BOARD_INSERT);
@@ -62,7 +61,6 @@ public class BoardDAO {
     }
 
     public BoardVO getBoardContent(String article_no) {
-        System.out.println("==> Get Board Content");
         BoardVO vo = new BoardVO();
         try {
             con = dataFactory.getConnection();
@@ -95,7 +93,6 @@ public class BoardDAO {
     }
 
     public List<BoardVO> getBoardList() {
-        System.out.println("==> Get BoardList");
         List<BoardVO> list = new ArrayList<>();
         try {
             con = dataFactory.getConnection();
@@ -135,7 +132,6 @@ public class BoardDAO {
     }
 
     public List<BoardVO> getBoardListWithPaging(int currentPage) {
-        System.out.println("==> getBoardListWithPaging");
         List<BoardVO> list = new ArrayList<>();
 
         int startNum = (currentPage-1)*10+1;
@@ -144,7 +140,7 @@ public class BoardDAO {
             con = dataFactory.getConnection();
 
             // sql = select * from ( select rownum as row_num,article_no from article) where row_num >= 11 AND row_num <=20 // 성능 문제 야기
-            // sql = select * from ( select rownum as row_num,article_no from article where row_num >= 11) where row_num <= 20 // this best
+            // sql = select * from ( select rownum as row_num,article_no from article where row_num >= 11) where row_num <= 20 // best
             pstmt = con.prepareStatement(BOARD_GET_BY_PAGING);
             pstmt.setInt(1, startNum);
             pstmt.setInt(2, endNum);
@@ -175,7 +171,6 @@ public class BoardDAO {
                 list.add(vo);
             }
 
-
             rs.close();
             pstmt.close();
             con.close();
@@ -186,7 +181,6 @@ public class BoardDAO {
     }
 
     public void updateBoardCnt(String article_no){
-        System.out.println("==> Update BoardCnt");
         try {
             con = dataFactory.getConnection();
             pstmt = con.prepareStatement(BOARD_UPDATE_CNT);
@@ -204,7 +198,6 @@ public class BoardDAO {
     }
 
     public int getBoardCnt(){
-        System.out.println("==> Get BoardCnt");
         int count = 0;
         try {
             con = dataFactory.getConnection();
@@ -226,7 +219,6 @@ public class BoardDAO {
     }
 
     public void deleteContent(int article_no){
-        System.out.println("==> Delete BoardContent");
         try {
             con = dataFactory.getConnection();
             pstmt = con.prepareStatement(BOARD_DELETE_CONTENT_1);
@@ -244,9 +236,8 @@ public class BoardDAO {
             e.printStackTrace();
         }
     }
-    public void updateContent(BoardVO vo){
-        System.out.println("==> updateContent");
 
+    public void updateContent(BoardVO vo){
         try {
             con = dataFactory.getConnection();
 
@@ -268,8 +259,6 @@ public class BoardDAO {
     }
 
     public String getPassword(String article_no){
-        System.out.println("==> getPassword");
-
         String password =null;
         try {
             con = dataFactory.getConnection();
@@ -292,8 +281,6 @@ public class BoardDAO {
     }
 
     public int uploadFile(String file,String article_no){
-        System.out.println("==> uploadFile");
-
         try {
             con = dataFactory.getConnection();
 

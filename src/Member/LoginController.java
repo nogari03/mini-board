@@ -3,6 +3,7 @@ package Member;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -55,16 +56,13 @@ public class LoginController extends HttpServlet {
 		if (!rst.equals("")) {
 			session.setAttribute("member_id", member_id);
 			session.setAttribute("name", rst);
-			System.out.println(vo.getName());
 			response.sendRedirect("/static/main.jsp");
 
 		} else if (rst.equals("")) {
-			out.print("<html><body>");
-			out.print("비밀번호 오류입니다<br>");
-			out.print("<a href ='/static/Member/logIn.jsp'>로그인화면으로</a>");
-			out.print("</body></html>");
-			System.out.println("초기화면으로 튕김");
-
+			request.setAttribute("command", "NotPassword");
+			RequestDispatcher dis = request.getRequestDispatcher("/static/Member/checkMember.jsp");
+			dis.forward(request, response);
+			return;
 		}
 
 	}

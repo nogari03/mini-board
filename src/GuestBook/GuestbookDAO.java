@@ -14,66 +14,16 @@ import javax.sql.DataSource;
 
 public class GuestbookDAO {
 	public static final int MESSAGE_NOUNT_PER_PAGE = 3;
+	public static final String GUESTBOOK_EDIT_UPDATE = "GUESTBOOK_MESSAGE set guest_name=?, message=?, fileName=? where message_id=?";
+	public static final String GUESTBOOK_EDIT_CHECK = "select * from GUESTBOOK_MESSAGE where password = ?";
+	public static final String GUESTBOOK_DEL_CHECKING = "select * from GUESTBOOK_MESSAGE where password=?";
+	public static final String GUESTBOOK_DEL_STARTING = "delete from GUESTBOOK_MESSAGE where password=?";
+	public static final String GUESTBOOK_ADD = "INSERT INTO GUESTBOOK_MESSAGE(Message_id, guest_name, password, message, filename) VALUES(guestbook_seq.nextval, ?, ?, ?, ?)";
+	private static final String GUESTBOOK_GET_BY_PAGING = "SELECT * from (select * from (select ROWNUM as row_num, guestbook_message.* from guestbook_message order by message_id desc) where row_num >=? )where row_num <=?";
+	private static final String GUESTBOOK_GET_BY_ALLCOUNT = "SELECT COUNT(*) as count FROM guestbook_message";
 	private DataSource dataFactory;
 	private Connection conn;
 	private PreparedStatement pstmt;
-
-
-	 public GuestbookVO checkGuest(String password) {
-	      GuestbookVO guestInfo = null;
-	      
-	      try {
-	         conn = dataFactory.getConnection();
-	         String query = "select * from GUESTBOOK_MESSAGE where password = ?";
-	         pstmt = conn.prepareStatement(query);
-	         pstmt.setString(1, password);
-	         System.out.println(query);
-	         ResultSet rs = pstmt.executeQuery();
-	         rs.next();
-	         String message_id = rs.getString("message_id");
-	         String guest_name = rs.getString("guest_name");
-	         String password2 = rs.getString("password");
-	         String message = rs.getString("message");
-	         guestInfo = new GuestbookVO(message_id, guest_name, password2, message);
-	         pstmt.close();
-	         conn.close();
-	      }catch(SQLException e) {
-	         e.printStackTrace();
-	      }
-	      
-	      return guestInfo;
-	   }
-	   
-	 public void editGuest(GuestbookVO guestbookVO) {
-         System.out.println("2******************");
-
-         try{
-            conn = dataFactory.getConnection();
-            String guest_name = guestbookVO.getGuest_name();
-            String message = guestbookVO.getMessage();
-            String message_id = guestbookVO.getMessage_id();
-            String fileName = guestbookVO.getFileName();
-            
-            String query = "update GUESTBOOK_MESSAGE set guest_name=?, message=?, fileName=? where message_id=?";
-            System.out.println(query);
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, guest_name);
-            System.out.println(guest_name);
-            pstmt.setString(2, message);
-            System.out.println(message);
-            pstmt.setString(3, fileName);
-            pstmt.setString(4, message_id);
-            
-            System.out.println(message_id);
-            System.out.println("1111111111111******************");
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-         }catch(SQLException e) {
-            e.printStackTrace();
-         }   
-      }
-
 
 	public GuestbookDAO() {
 		try {
@@ -85,32 +35,73 @@ public class GuestbookDAO {
 		}
 	}
 
-	public int delGuestbook(String password) {
-	      int result = 0;
-	      try {
-	         conn = dataFactory.getConnection();
-	         String query = "select * from GUESTBOOK_MESSAGE where password=?";
-	         System.out.println(query);
-	         pstmt = conn.prepareStatement(query);
-	         pstmt.setString(1, password);
-	         ResultSet rs = pstmt.executeQuery();
-	         System.out.println("del  조회중");
-	      while(rs.next()) {
-	            result=1;
-	            System.out.println("삭제 진행");
-	            String query1 = "delete from GUESTBOOK_MESSAGE where password=?";
-	            pstmt = conn.prepareStatement(query1);
-	            pstmt.setString(1, password);
-	            pstmt.executeUpdate();
-	      }
-	         pstmt.close();
-	         conn.close();
-	      } catch (SQLException e) {
-	         e.printStackTrace();
-	      }
-	      return result;
-	   }
+	public GuestbookVO checkGuest(String password) {
+		GuestbookVO guestInfo = null;
 
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(GUESTBOOK_EDIT_CHECK);
+
+			pstmt.setString(1, password);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			String message_id = rs.getString("message_id");
+			String guest_name = rs.getString("guest_name");
+			String password2 = rs.getString("password");
+			String message = rs.getString("message");
+			guestInfo = new GuestbookVO(message_id, guest_name, password2, message);
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return guestInfo;
+	}
+
+	public void editGuest(GuestbookVO guestbookVO) {
+
+		try {
+			conn = dataFactory.getConnection();
+			String guest_name = guestbookVO.getGuest_name();
+			String message = guestbookVO.getMessage();
+			String message_id = guestbookVO.getMessage_id();
+			String fileName = guestbookVO.getFileName();
+
+			pstmt = conn.prepareStatement(GUESTBOOK_EDIT_UPDATE);
+			pstmt.setString(1, guest_name);
+			pstmt.setString(2, message);
+			pstmt.setString(3, fileName);
+			pstmt.setString(4, message_id);
+			pstmt.executeUpdate();
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	public int delGuestbook(String password) {
+		int result = 0;
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(GUESTBOOK_DEL_CHECKING);
+			pstmt.setString(1, password);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result = 1;
+				pstmt = conn.prepareStatement(GUESTBOOK_DEL_STARTING);
+				pstmt.setString(1, password);
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	public void addGuestbook(GuestbookVO m) {
 		try {
@@ -119,11 +110,7 @@ public class GuestbookDAO {
 			String password = m.getPassword();
 			String message = m.getMessage();
 			String fileName = m.getFileName();
-			String query = "INSERT INTO GUESTBOOK_MESSAGE(Message_id, guest_name, password, message, filename) VALUES(guestbook_seq.nextval, ?, ?, ?, ?)";
-			System.out.println(m.toString());
-
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(GUESTBOOK_ADD);
 			pstmt.setString(1, guest_name);
 			pstmt.setString(2, password);
 			pstmt.setString(3, message);
@@ -135,24 +122,20 @@ public class GuestbookDAO {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	public List<GuestbookVO> selectAllpage(G_paging gp) {
+
+	public List<GuestbookVO> selectAllpage(GuestbookPagingVO gp) { // 페이징 처리된 목록 보기
 		int page = gp.getPage();
-		System.out.println("UIpage:   "+   page);
-	  int startNum = gp.getStartNum();
-	   int endNum = gp.getEndNum();
-		String query = "SELECT * from (select * from (select ROWNUM as row_num, guestbook_message.* from guestbook_message order by message_id desc) where row_num >=? )where row_num <=? ";
+		int startNum = gp.getStartNum();
+		int endNum = gp.getEndNum();
 		List<GuestbookVO> list = new ArrayList<GuestbookVO>();
-		try {System.out.println("try start!!!!!!!!!!!!"+startNum+"/////"+endNum);
+		try {
 			conn = dataFactory.getConnection();
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(GUESTBOOK_GET_BY_PAGING);
 			pstmt.setInt(1, startNum);
 			pstmt.setInt(2, endNum);
 			ResultSet rs = pstmt.executeQuery();
-			System.out.println(query);
+			System.out.println(GUESTBOOK_GET_BY_PAGING);
 			while (rs.next()) {
-				System.out.println("while start!!!!!!!!!!!!");
 				GuestbookVO vo = new GuestbookVO();
 				vo.setMessage_id(rs.getString("message_id"));
 				vo.setGuest_name(rs.getString("guest_name"));
@@ -167,35 +150,24 @@ public class GuestbookDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println(list.size()+":        다오에서확인하는리스트 사이즈");
 		return list;
 	}
-	public int getAllCount() {
-		String query = "SELECT COUNT(*) as count FROM guestbook_message";	
+
+	public int getAllCount() { // 페이징 처리하기 위한 방명록 개수 계
 		int count = 0;
 		try {
 			conn = dataFactory.getConnection();
-			pstmt = conn.prepareStatement(query);
-			ResultSet rs=pstmt.executeQuery();
+			pstmt = conn.prepareStatement(GUESTBOOK_GET_BY_ALLCOUNT);
+			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				count=rs.getInt("count");
+				count = rs.getInt("count");
 			}
 			rs.close();
 			pstmt.close();
 			conn.close();
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("확인해보자 카운트 수:   "+count);
 		return count;
 	}
 }
-	
-	
-	
-	
-	
-	
-	
-	
-

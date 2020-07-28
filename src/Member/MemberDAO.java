@@ -16,6 +16,14 @@ public class MemberDAO {
 	private Connection conn;
 	private PreparedStatement pstmt;
 
+	private static final String addMember = "INSERT INTO member(member_id, password, name, regdate) VALUES(?, ?, ?,sysdate)";
+	private static final String select_id_pw = "select * from member where member_id=? and password=?";
+	private static final String delMember = "delete from member where member_id=? and password=?";
+	private static final String updatePassword = "update member set password=? where password=?";
+	private static final String selectPw = "select * from member where password=?";
+	private static final String selectId = "select * from member where member_id=?";
+	private static final String selectMember = "select * from member";
+
 	public MemberDAO() {
 		try {
 			Context ctx = new InitialContext();
@@ -26,13 +34,11 @@ public class MemberDAO {
 		}
 	}
 
-	public List<MemberVO> listMembers() {
+	public List<MemberVO> listMembers() { // 전체 조회
 		List<MemberVO> membersList = new ArrayList();
 		try {
 			conn = dataFactory.getConnection();
-			String query = "select * from member";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(selectMember);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				String id = rs.getString("member_id");
@@ -51,16 +57,14 @@ public class MemberDAO {
 		return membersList;
 	}
 
-	public void addMember(MemberVO m) {
+	public void addMember(MemberVO m) { // 회원가입
 		try {
 			conn = dataFactory.getConnection();
-			System.out.println("가입다오왔니?");
 			String id = m.getMember_id();
 			String pwd = m.getPassword();
 			String name = m.getName();
-			String query = "INSERT INTO member(member_id, password, name) VALUES(?, ?, ?)";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+
+			pstmt = conn.prepareStatement(addMember);
 			pstmt.setString(1, id);
 			pstmt.setString(2, pwd);
 			pstmt.setString(3, name);
@@ -73,71 +77,57 @@ public class MemberDAO {
 		}
 	}
 
-	public int delMember(MemberVO m) {
+	public int delMember(MemberVO m) { // 회원 탈퇴 (아이디, 암호 비교 후 참이면 탈퇴 진행)
 		int rst = 0;
 		try {
-		conn = dataFactory.getConnection();
-			String query = "select * from member where member_id=? and password=?";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(select_id_pw);
 			pstmt.setString(1, m.getMember_id());
 			pstmt.setString(2, m.getPassword());
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				rst = 1;
-				System.out.println("아디비번확인완료!");
-			String query2 = "delete from member where member_id=? and password=?";
-			System.out.println(query2);
-			pstmt = conn.prepareStatement(query2);
-			pstmt.setString(1, m.getMember_id());
-			pstmt.setString(2, m.getPassword() );
-			System.out.println("에스큐지운다!!!!!!");
-			pstmt.executeUpdate();
+				pstmt = conn.prepareStatement(delMember);
+				pstmt.setString(1, m.getMember_id());
+				pstmt.setString(2, m.getPassword());
+				pstmt.executeUpdate();
 			}
 			pstmt.close();
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("rst: "+rst);
 		return rst;
 	}
-	
-	public String logInCheck(MemberVO m) {
-		String rst="";
+
+	public String logInCheck(MemberVO m) { // 로그인 (아이디, 비밀번호 입력받아 db데이터 비교)
+		String rst = "";
 		try {
 			conn = dataFactory.getConnection();
-				String query = "select * from member where member_id=? and password=?";
-				System.out.println(query);
-				pstmt = conn.prepareStatement(query);
-				pstmt.setString(1, m.getMember_id());
-				pstmt.setString(2, m.getPassword());
-				ResultSet rs = pstmt.executeQuery();
-				if (rs.next()) {
-					MemberVO vo = new MemberVO();
-					vo.setName(rs.getString("name"));
-					rst = vo.getName();
-					System.out.println(rst);
-					System.out.println("아디비번확인완료!");
-				}
-				pstmt.close();
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			pstmt = conn.prepareStatement(select_id_pw);
+			pstmt.setString(1, m.getMember_id());
+			pstmt.setString(2, m.getPassword());
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				MemberVO vo = new MemberVO();
+				vo.setName(rs.getString("name")); // jsp로 보내줄 이름
+				rst = vo.getName();
 			}
-			System.out.println("loginCheck rst: "+rst);
-			return rst;
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		return rst;
+	}
 
-	public void editPwd(MemberVO m, String newPassword) {
+	public void editPwd(MemberVO m, String newPassword) { // 암호 수정
 		String password = m.getPassword();
 		String nPwd = newPassword;
 		try {
 			conn = dataFactory.getConnection();
-			String query = "update member set password=? where password=?";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, nPwd);
+			pstmt = conn.prepareStatement(updatePassword);
+			pstmt.setString(1, nPwd); // 새로입력받은 암호
 			pstmt.setString(2, password);
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -147,18 +137,15 @@ public class MemberDAO {
 		}
 	}
 
-	public int idCheck(String id) {
+	public int idCheck(String id) { // 아이디 중복 체크
 		int rst = 0;
 		try {
 			conn = dataFactory.getConnection();
-			String query = "select * from member where member_id=?";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(selectId);
 			pstmt.setString(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				rst = 1;
-				System.out.println("중복이야야아");
+				rst = 1; // 아이디 중복시 1
 			}
 			pstmt.close();
 			conn.close();
@@ -168,18 +155,15 @@ public class MemberDAO {
 		return rst;
 	}
 
-	public int pwdCheck(String password) {
+	public int pwdCheck(String password) { // 비밀번호 중복 체크
 		int rst = 0;
 		try {
 			conn = dataFactory.getConnection();
-			String query = "select * from member where password=?";
-			System.out.println(query);
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(selectPw);
 			pstmt.setString(1, password);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				rst = 1;
-				System.out.println("비번확인완료!");
+				rst = 1; // 비밀번호 중복시 1
 			}
 			pstmt.close();
 			conn.close();
